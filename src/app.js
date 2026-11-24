@@ -171,24 +171,26 @@ function lab() {
     }
     return '<tr><td>'+ACTION_NAMES[key]+'</td><td>'+n+'</td><td>'+best+'</td></tr>';
   }).join('');
-  const record=book.record;
+  const record=book.record.map((n,i)=>n+' '+(n===1?['win','loss','draw'][i]:['wins','losses','draws'][i])).join(', ');
   show('<h2 id="dialog-title">Colony lab</h2><p class="dialog-lead">Inspect the habits your ants have learned from completed trips.</p>'+
     '<div class="segmented" role="group" aria-label="Inspect colony"><button id="lab-moss" class="'+(!labSide?'active':'')+'" aria-pressed="'+(!labSide)+'">Moss · You</button><button id="lab-ember" class="rival '+(labSide?'active':'')+'" aria-pressed="'+!!labSide+'">Ember · '+(guest?'Guest':'AI')+'</button></div>'+
     '<div class="stats"><div><b>'+st.runs+'</b><span>Trips logged</span></div><div><b>'+(st.runs?Math.round(st.deliveries/st.runs*100):0)+'%</b><span>Delivered</span></div><div><b>'+st.guarded+'</b><span>Interceptions</span></div></div>'+
     '<table class="lab-table"><thead><tr><th>Order</th><th>Trips</th><th>Best formation</th></tr></thead><tbody>'+rows+'</tbody></table>'+
-    '<p class="dialog-note dialog-bottom">'+(brain.frozen?'This visiting colony uses the policy its trainer shared.':memoryAvailable?'Learning is saved on this device.':'Learning is available for this visit.')+' Match record: '+record[0]+' wins, '+record[1]+' losses, '+record[2]+' draws.</p>'+
+    '<p class="dialog-note dialog-bottom">'+(brain.frozen?'This visiting colony uses the policy its trainer shared.':memoryAvailable?'Learning is saved on this device.':'Learning is available for this visit.')+' Match record: '+record+'.</p>'+
     '<div class="dialog-actions"><button class="secondary" id="share-colony">'+icon('share')+'Copy colony challenge</button></div>'+
     '<p class="dialog-note" style="margin-top:7px">Challenge a friend to play against a snapshot of your Moss colony.</p><div class="share-result" id="share-result" role="status"></div>','Colony memory');
   $('lab-moss').onclick=()=>{labSide=0;lab();$('lab-moss').focus();};
   $('lab-ember').onclick=()=>{labSide=1;lab();$('lab-ember').focus();};
   $('share-colony').onclick=async()=>{
     const url=new URL(location.href);url.hash='colony='+encodeChallenge(book.moss);
+    const result=$('share-result'), open=document.createElement('a');
+    open.href=url.href;open.target='_blank';open.rel='noopener';open.textContent='Open challenge';
     try {
       if(!navigator.clipboard?.writeText)throw new Error('clipboard');
-      await navigator.clipboard.writeText(url.href);setText('share-result','Challenge link copied.');
+      await navigator.clipboard.writeText(url.href);result.replaceChildren('Challenge link copied. ',open);
     } catch {
       const input=document.createElement('input');input.readOnly=true;input.value=url.href;input.setAttribute('aria-label','Colony challenge link');
-      const result=$('share-result');result.replaceChildren('Copy this challenge link: ',input);input.focus();input.select();
+      result.replaceChildren('Copy this challenge link: ',input,open);input.focus();input.select();
     }
   };
 }
@@ -289,6 +291,9 @@ document.addEventListener('visibilitychange',()=>{
   if(document.hidden){clearStroke();game.pause();resumeAfterDialog=false;refreshHUD();persist();}
 });
 window.addEventListener('pagehide',persist);
+window.addEventListener('hashchange',()=>{
+  if(new URLSearchParams(location.hash.slice(1)).get('colony')!==incoming) location.reload();
+});
 if(guest){setText('mode-name','Colony challenge');setText('rival-tag','Guest');}
 let then=performance.now(), accumulator=0;
 function frame(now) {

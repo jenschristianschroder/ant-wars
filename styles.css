@@ -167,7 +167,7 @@ dialog::backdrop{background:#0b1008ad;backdrop-filter:blur(3px)}
 .secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:7px 13px;border:1px solid #536147;border-radius:4px;background:#313a28;font-size:15px;font-weight:600}
 .dialog-actions .primary{min-height:41px;font-size:16px}
 .share-result{margin-top:8px;color:var(--green);font-size:14px;overflow-wrap:anywhere}
-.share-result input{width:100%;padding:6px;background:#171c13;border:1px solid var(--line);border-radius:4px;font:13px var(--mono);color:var(--text)}
+.share-result a{color:var(--text);text-underline-offset:3px}.share-result input{width:100%;padding:6px;background:#171c13;border:1px solid var(--line);border-radius:4px;font:13px var(--mono);color:var(--text)}
 .log-list{padding:0;margin:14px 0 0;list-style:none;max-height:45vh;overflow:auto}
 .log-list li{display:flex;gap:11px;border-top:1px solid var(--line);padding:8px 0}
 .log-list time{color:var(--amber);font:12px var(--mono);line-height:1.6}
