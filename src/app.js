@@ -14,7 +14,7 @@ const incoming = new URLSearchParams(location.hash.slice(1)).get('colony');
 const guest = decodeChallenge(incoming);
 let game = new Arena({ moss:book.moss, ember:guest || book.ember });
 let round = 1 + book.record.reduce((s,n)=>s+n,0);
-let slot = 0, modalKind = '', labSide = 0, resumeAfterDialog = false, resultRecorded = false;
+let slot = 0, labSide = 0, resumeAfterDialog = false, resultRecorded = false;
 let lastUI = -1, lastSaved = -10, lastRunCount = -1, hintUntil = 0, audioContext;
 let memoryAvailable = saveNotebook(storage,book);
 let previousPhase = '';
@@ -26,7 +26,6 @@ game.emit('field',incoming && !guest ? 'Challenge link unreadable. The local Emb
 function persist() { memoryAvailable=saveNotebook(storage,book); }
 function announce(message) { setText('announce',message); }
 function hint(message) { setText('field-hint',message);hintUntil=performance.now()+3700;announce(message); }
-function teamName(side) { return side ? 'Ember' : 'Moss'; }
 function orderName(trail) { return trail?.key==='guard' ? (trail.post?'Guard post':'Nest guard') : ACTION_NAMES[trail?.key] || 'Unassigned'; }
 function playTone(frequency=440, length=0.075, delay=0) {
   if(!book.sound) return;
@@ -62,6 +61,8 @@ function refreshTrails() {
   setText('capacity',game.trails[0].filter(Boolean).length+' / 2 active');
   for(let i=0;i<2;i++){
     const trail=game.trails[0][i], btn=$('slot-'+i);
+    const role=trail ? (FOOD[trail.key]?'Forage':trail.key==='raid'?'Raid':'Guard') : 'Open trail';
+    setText('slot-role-'+i,role);
     setText('slot-name-'+i,orderName(trail));btn.classList.toggle('vacant',!trail);
     btn.setAttribute('aria-label','Trail '+(i+1)+', '+orderName(trail));
   }
@@ -133,8 +134,7 @@ function refreshHUD() {
   if(count!==lastRunCount){intel();if(game.time-lastSaved>2 || lastRunCount<0){persist();lastSaved=game.time;lastRunCount=count;}}
 }
 
-function show(kind, markup, kicker) {
-  modalKind=kind;
+function show(markup, kicker) {
   if(!dialog.open){
     resumeAfterDialog=game.phase==='live';
     if(resumeAfterDialog)game.pause();
@@ -147,7 +147,7 @@ function show(kind, markup, kicker) {
 }
 
 function guide() {
-  show('guide','<h2 id="dialog-title">Field guide</h2><p class="dialog-lead">Bring home 40 crumbs, or hold the lead when the 90-second clock expires. Equal scores at the buzzer draw.</p>'+
+  show('<h2 id="dialog-title">Field guide</h2><p class="dialog-lead">Bring home 40 crumbs, or hold the lead when the 90-second clock expires. Equal scores at the buzzer draw.</p>'+
     '<div class="dialog-grid"><div class="guide-row"><span class="guide-icon">'+icon('trail')+'</span><p><strong>Draw two scent trails</strong>Select a trail, then tap a target or draw a path from Moss nest. Ants already out finish their trip.</p></div>'+
     '<div class="guide-row"><i class="tile berry"></i><p><strong>Haul picnic food</strong>Sugar and biscuit runs bring 2 crumbs. Strawberries bring 3. A patch picked clean refills in 10 seconds.</p></div>'+
     '<div class="guide-row"><span class="guide-icon">'+icon('shield')+'</span><p><strong>Guard or raid</strong>Tap open ground or your nest to post a guard. Tap the Ember nest to steal up to 4 crumbs. Escorts can slip past guards.</p></div>'+
@@ -172,7 +172,7 @@ function lab() {
     return '<tr><td>'+ACTION_NAMES[key]+'</td><td>'+n+'</td><td>'+best+'</td></tr>';
   }).join('');
   const record=book.record;
-  show('lab','<h2 id="dialog-title">Colony lab</h2><p class="dialog-lead">Inspect the habits your ants have learned from completed trips.</p>'+
+  show('<h2 id="dialog-title">Colony lab</h2><p class="dialog-lead">Inspect the habits your ants have learned from completed trips.</p>'+
     '<div class="segmented" role="group" aria-label="Inspect colony"><button id="lab-moss" class="'+(!labSide?'active':'')+'" aria-pressed="'+(!labSide)+'">Moss · You</button><button id="lab-ember" class="rival '+(labSide?'active':'')+'" aria-pressed="'+!!labSide+'">Ember · '+(guest?'Guest':'AI')+'</button></div>'+
     '<div class="stats"><div><b>'+st.runs+'</b><span>Trips logged</span></div><div><b>'+(st.runs?Math.round(st.deliveries/st.runs*100):0)+'%</b><span>Delivered</span></div><div><b>'+st.guarded+'</b><span>Interceptions</span></div></div>'+
     '<table class="lab-table"><thead><tr><th>Order</th><th>Trips</th><th>Best formation</th></tr></thead><tbody>'+rows+'</tbody></table>'+
@@ -195,7 +195,7 @@ function lab() {
 
 function fieldLog() {
   const entries=game.events.map(e=>'<li><time>'+clock(Math.floor(e.time))+'</time><span>'+e.message+'</span></li>').reverse().join('');
-  show('log','<h2 id="dialog-title">Field log</h2><p class="dialog-lead">Orders and encounters in round '+two(round)+'.</p><ul class="log-list">'+entries+'</ul>','Battlefield');
+  show('<h2 id="dialog-title">Field log</h2><p class="dialog-lead">Orders and encounters in round '+two(round)+'.</p><ul class="log-list">'+entries+'</ul>','Battlefield');
 }
 
 function report() {
@@ -205,7 +205,7 @@ function report() {
   const insight=pressure?'Under raid pressure, Ember’s highest-rated order is '+ACTION_NAMES[pressure].toLowerCase()+'.':
     quiet?'Ember’s highest-rated order in quiet conditions is '+ACTION_NAMES[quiet].toLowerCase()+'.':'';
   const reason=game.time>=ROUND_SECONDS?'Time ran out on the picnic grounds.':'The winning colony reached the crumb goal.';
-  show('result','<h2 id="dialog-title">'+title+'</h2><p class="dialog-lead">'+reason+'</p>'+
+  show('<h2 id="dialog-title">'+title+'</h2><p class="dialog-lead">'+reason+'</p>'+
     '<div class="result-score"><div class="moss"><i class="tile ant-moss"></i><b>'+game.scores[0]+'</b><span>Moss colony</span></div><span>vs</span><div class="ember"><i class="tile ant-ember"></i><b>'+game.scores[1]+'</b><span>Ember colony</span></div></div>'+
     '<p class="lab-details">Moss completed '+totals.runs+' trips, brought home crumbs on '+totals.deliveries+' and intercepted '+totals.guarded+' rival '+(totals.guarded===1?'party':'parties')+'. '+insight+'</p>'+
     '<div class="dialog-actions"><button class="primary" id="new-round">'+icon('play')+'Next round</button><button class="secondary" id="result-lab">'+icon('lab')+'Inspect colony</button></div>',
@@ -273,7 +273,7 @@ dialog.addEventListener('click',event=>{
   if(event.clientX<b.left||event.clientX>b.right||event.clientY<b.top||event.clientY>b.bottom)dialog.close();
 });
 dialog.addEventListener('close',()=>{
-  modalKind='';if(resumeAfterDialog&&!document.hidden)game.resume();
+  if(resumeAfterDialog&&!document.hidden)game.resume();
   resumeAfterDialog=false;previousPhase='';refreshHUD();
 });
 document.addEventListener('keydown',event=>{

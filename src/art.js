@@ -7,13 +7,6 @@ atlas.src = new URL('../assets/field-sprites.png', import.meta.url);
 const spriteIndex = { sugar: 2, berry: 3, biscuit: 4 };
 const demoTrails = [0.15, 0.33, 0.5, 0.72, 0.9];
 
-function poly(ctx, points, color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  points.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
-  ctx.closePath(); ctx.fill();
-}
-
 function sprite(ctx, index, x, y, size) {
   if (!atlas.complete || !atlas.naturalWidth) return;
   ctx.drawImage(atlas, index * 80, 0, 80, 80, Math.round(x - size / 2), Math.round(y - size * 0.57), size, size);
@@ -57,7 +50,6 @@ export class FieldView {
     this.draft = null;
     this.hover = null;
     this.pulse = null;
-    this.markers = true;
     this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.resize = new ResizeObserver(() => this.measure());
     this.resize.observe(canvas);
@@ -147,13 +139,13 @@ export class FieldView {
       ctx.globalAlpha=empty?0.47:1;
       sprite(ctx,spriteIndex[key],at.x,at.y,scale*(key==='berry'?86:83));
       ctx.globalAlpha=1;
-      if(this.markers)this.label(empty?'REFILLING':p.name.toUpperCase(),at.x,at.y+26*scale,'#fff3d1',scale);
+      this.label(empty?'REFILLING':p.name.toUpperCase(),at.x,at.y+26*scale,'#fff3d1',scale);
     }
     for (const side of [0,1]){
       const at=this.screen(NESTS[side]);
       if(this.hover?.key===(side?'raid':'guard')&&!this.hover.post)this.ring(at,40*scale,side?red:green,2);
       sprite(ctx,side,at.x,at.y-5*scale,scale*129);
-      if(this.markers)this.label(side?'EMBER NEST':'MOSS NEST',at.x,at.y+38*scale,side?'#ffbc9e':'#cdf09e',scale,true);
+      this.label(side?'EMBER NEST':'MOSS NEST',at.x,at.y+38*scale,side?'#ffbc9e':'#cdf09e',scale,true);
     }
     if(game.phase==='ready') {
       for (const side of [0,1]) {

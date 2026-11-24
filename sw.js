@@ -1,4 +1,4 @@
-const CACHE = 'ant-wars-picnic-v1.0.0';
+const CACHE = 'ant-wars-picnic-v1.0.1';
 const FILES = [
   './', './index.html', './styles.css', './manifest.webmanifest',
   './src/app.js', './src/engine.js', './src/memory.js', './src/art.js',

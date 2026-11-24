@@ -18,7 +18,7 @@
     <a class="brand" href="./" aria-label="Ant Wars home"><img src="./assets/ant-mark.png" width="45" height="32" alt=""><span>ANT WARS</span></a>
     <nav aria-label="Game navigation">
       <button class="nav-tab current" id="field-tab" aria-current="page"><canvas data-icon="field" aria-hidden="true"></canvas><span>Battlefield</span></button>
-      <button class="nav-tab" id="lab-tab"><canvas data-icon="lab" aria-hidden="true"></canvas><span>Colony lab</span></button>
+      <button class="nav-tab" id="lab-tab" aria-label="Colony lab"><canvas data-icon="lab" aria-hidden="true"></canvas><span>Colony lab</span></button>
     </nav>
     <div class="mast-tools">
       <button class="guide-button" id="guide-button" aria-label="Open field guide"><canvas data-icon="book" aria-hidden="true"></canvas><span>Field guide</span></button>
@@ -53,7 +53,7 @@
           </div>
         </div>
         <div class="map">
-          <canvas id="field" aria-label="Picnic battlefield. Use the destination menu to issue the same orders with a keyboard." role="img">Use the scent trail buttons and destination menu to command your ants.</canvas>
+          <canvas id="field" aria-label="Picnic battlefield. Use the destination menu for food and nest orders." role="img">Use the scent trail buttons and destination menu to command your ants.</canvas>
           <span class="phase-tag" id="phase-tag"><i></i><span id="phase-name">Planning</span></span>
           <button class="map-expand" id="expand" aria-label="Expand battlefield" title="Expand battlefield"><canvas data-icon="expand" aria-hidden="true"></canvas></button>
           <div class="map-pause" id="map-pause" hidden><button id="resume-board"><canvas data-icon="play" aria-hidden="true"></canvas> Resume round</button></div>
@@ -71,8 +71,8 @@
         <div class="orders">
           <div class="section-label"><h3>Scent trails</h3><span class="capacity" id="capacity">1 / 2 active</span></div>
           <div class="trail-buttons" role="group" aria-label="Select a scent trail">
-            <button class="trail-card selected" id="slot-0" aria-pressed="true"><span class="slot-no">01</span><span class="slot-text"><small>Trail 1</small><strong id="slot-name-0">Sugar cubes</strong></span><span class="trail-line" aria-hidden="true"></span></button>
-            <button class="trail-card vacant" id="slot-1" aria-pressed="false"><span class="slot-no">02</span><span class="slot-text"><small>Trail 2</small><strong id="slot-name-1">Unassigned</strong></span><span class="trail-line" aria-hidden="true"></span></button>
+            <button class="trail-card selected" id="slot-0" aria-pressed="true"><span class="slot-no">01</span><span class="slot-text"><small id="slot-role-0">Forage</small><strong id="slot-name-0">Sugar cubes</strong></span><span class="trail-line" aria-hidden="true"></span></button>
+            <button class="trail-card vacant" id="slot-1" aria-pressed="false"><span class="slot-no">02</span><span class="slot-text"><small id="slot-role-1">Open trail</small><strong id="slot-name-1">Unassigned</strong></span><span class="trail-line" aria-hidden="true"></span></button>
           </div>
           <div class="order-row">
             <label class="destination"><canvas data-icon="pin" aria-hidden="true"></canvas><select id="destination" aria-label="Set destination for selected trail"><option value="" selected disabled>Set destination</option><option value="sugar">Forage · Sugar cubes</option><option value="berry">Forage · Strawberry</option><option value="biscuit">Forage · Biscuit</option><option value="guard">Guard · Your nest</option><option value="raid">Raid · Ember nest</option></select><canvas data-icon="chevron" aria-hidden="true"></canvas></label>
