@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#141710">
+  <meta name="description" content="Draw two scent trails and lead the Moss colony in a picnic skirmish against a rival that learns.">
+  <title>Ant Wars · Picnic Grounds</title>
+  <link rel="icon" type="image/png" href="./assets/icon-192.png">
+  <link rel="apple-touch-icon" href="./assets/icon-192.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="preload" as="image" href="./assets/picnic-clearing.webp">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="mast">
+  <div class="mast-in">
+    <a class="brand" href="./" aria-label="Ant Wars home"><img src="./assets/ant-mark.png" width="45" height="32" alt=""><span>ANT WARS</span></a>
+    <nav aria-label="Game navigation">
+      <button class="nav-tab current" id="field-tab" aria-current="page"><canvas data-icon="field" aria-hidden="true"></canvas><span>Battlefield</span></button>
+      <button class="nav-tab" id="lab-tab"><canvas data-icon="lab" aria-hidden="true"></canvas><span>Colony lab</span></button>
+    </nav>
+    <div class="mast-tools">
+      <button class="guide-button" id="guide-button" aria-label="Open field guide"><canvas data-icon="book" aria-hidden="true"></canvas><span>Field guide</span></button>
+      <button class="icon-button sound" id="sound" aria-label="Turn sound on" aria-pressed="false"><canvas data-icon="muted" aria-hidden="true"></canvas></button>
+    </div>
+  </div>
+</header>
+<main class="shell">
+  <section class="intro" aria-labelledby="arena-title">
+    <div class="arena-name">
+      <p class="eyebrow"><span class="signal" aria-hidden="true"><i></i><i></i><i></i></span><span id="mode-name">Solo skirmish</span></p>
+      <h1 id="arena-title">Picnic Grounds</h1>
+      <p class="mission">Lead the Moss colony. First to <strong>40 crumbs</strong> wins.</p>
+    </div>
+    <div class="match-readout" aria-label="Match status">
+      <div><span class="micro">Round</span><b id="round-num">01</b></div>
+      <div class="timer-block"><span class="micro">Time left</span><b><canvas data-icon="clock" aria-hidden="true"></canvas><span id="clock">01:30</span></b></div>
+    </div>
+  </section>
+  <div class="game-layout">
+    <div class="field-column">
+      <section class="board-wrap panel" id="board-wrap" aria-label="Picnic battlefield">
+        <div class="scorebar">
+          <div class="score-team moss">
+            <span class="portrait" aria-hidden="true"><i class="tile ant-moss"></i></span>
+            <div class="score-info"><div class="score-top"><h2>Moss colony</h2><span class="team-tag">You</span><b><span id="moss-score">0</span><small> / 40</small></b></div><div class="meter"><i id="moss-meter"></i></div></div>
+          </div>
+          <span class="versus" aria-hidden="true">VS</span>
+          <div class="score-team ember">
+            <span class="portrait" aria-hidden="true"><i class="tile ant-ember"></i></span>
+            <div class="score-info"><div class="score-top"><h2>Ember colony</h2><span class="team-tag" id="rival-tag">AI</span><b><span id="ember-score">0</span><small> / 40</small></b></div><div class="meter"><i id="ember-meter"></i></div></div>
+          </div>
+        </div>
+        <div class="map">
+          <canvas id="field" aria-label="Picnic battlefield. Use the destination menu to issue the same orders with a keyboard." role="img">Use the scent trail buttons and destination menu to command your ants.</canvas>
+          <span class="phase-tag" id="phase-tag"><i></i><span id="phase-name">Planning</span></span>
+          <button class="map-expand" id="expand" aria-label="Expand battlefield" title="Expand battlefield"><canvas data-icon="expand" aria-hidden="true"></canvas></button>
+          <div class="map-pause" id="map-pause" hidden><button id="resume-board"><canvas data-icon="play" aria-hidden="true"></canvas> Resume round</button></div>
+        </div>
+        <div class="board-caption"><canvas data-icon="pointer" aria-hidden="true"></canvas><span id="field-hint">Tap a target, or draw a trail from your nest.</span>
+          <div class="expanded-tools"><button id="quick-1" aria-label="Select trail one">1</button><button id="quick-2" aria-label="Select trail two">2</button><button id="quick-action">Start</button></div>
+        </div>
+      </section>
+      <section class="field-log"><canvas data-icon="list" aria-hidden="true"></canvas><button id="log-button">Field log</button><span class="log-div"></span><span id="log-latest">Moss scouts marked the sugar cubes.</span></section>
+    </div>
+    <aside class="sidebar" aria-label="Colony commands">
+      <section class="command panel">
+        <h2 class="panel-title"><canvas data-icon="antenna" aria-hidden="true"></canvas>Command post</h2>
+        <button class="primary" id="round-action"><canvas id="action-icon" data-icon="play" aria-hidden="true"></canvas><span id="action-label">Start round</span><kbd>Space</kbd></button>
+        <div class="orders">
+          <div class="section-label"><h3>Scent trails</h3><span class="capacity" id="capacity">1 / 2 active</span></div>
+          <div class="trail-buttons" role="group" aria-label="Select a scent trail">
+            <button class="trail-card selected" id="slot-0" aria-pressed="true"><span class="slot-no">01</span><span class="slot-text"><small>Trail 1</small><strong id="slot-name-0">Sugar cubes</strong></span><span class="trail-line" aria-hidden="true"></span></button>
+            <button class="trail-card vacant" id="slot-1" aria-pressed="false"><span class="slot-no">02</span><span class="slot-text"><small>Trail 2</small><strong id="slot-name-1">Unassigned</strong></span><span class="trail-line" aria-hidden="true"></span></button>
+          </div>
+          <div class="order-row">
+            <label class="destination"><canvas data-icon="pin" aria-hidden="true"></canvas><select id="destination" aria-label="Set destination for selected trail"><option value="" selected disabled>Set destination</option><option value="sugar">Forage · Sugar cubes</option><option value="berry">Forage · Strawberry</option><option value="biscuit">Forage · Biscuit</option><option value="guard">Guard · Your nest</option><option value="raid">Raid · Ember nest</option></select><canvas data-icon="chevron" aria-hidden="true"></canvas></label>
+            <button class="clear-order" id="clear" aria-label="Clear selected trail" title="Clear selected trail"><canvas data-icon="trash" aria-hidden="true"></canvas></button>
+          </div>
+        </div>
+      </section>
+      <section class="intel panel"><div class="intel-label"><canvas data-icon="lab" aria-hidden="true"></canvas><h2>Colony intel</h2><span class="intel-light" aria-hidden="true"></span></div><h3 id="intel-title">Awaiting first return</h3><p id="intel-body">Each trip teaches your colony when to travel solo or send an escort.</p></section>
+    </aside>
+  </div>
+</main>
+<div class="sr" id="announce" role="status" aria-live="polite"></div>
+<dialog id="dialog" aria-labelledby="dialog-title">
+  <div class="dialog-top"><p class="eyebrow" id="dialog-kicker">Ant wars</p><button class="icon-button" id="close-dialog" aria-label="Close dialog"><canvas data-icon="cross" aria-hidden="true"></canvas></button></div>
+  <div id="dialog-content"></div>
+</dialog>
+<noscript>Ant Wars needs JavaScript to simulate the colonies.</noscript>
+<script type="module" src="./src/app.js"></script>
+</body>
+</html>
